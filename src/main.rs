@@ -1,8 +1,25 @@
 use reqwest::header::{AUTHORIZATION, USER_AGENT};
+use serde::{Deserialize};
 
-struct CatFact {
-    fact: String,
-    length: i32,
+#[derive(Deserialize, Debug)]
+struct SubList {
+    data: SubData
+}
+
+#[derive(Deserialize, Debug)]
+struct SubData {
+    children: Vec<Sub>
+}
+
+#[derive(Deserialize, Debug)]
+struct Sub {
+    kind: String,
+    data: SubDetail
+}
+
+#[derive(Deserialize, Debug)]
+struct SubDetail {
+    display_name: String
 }
 
 #[tokio::main]
@@ -12,7 +29,7 @@ async fn main() {
     println!("subs = {:#?}", subs);
 }
 
-async fn get_subs() -> Result<String, Box<dyn std::error::Error>> {
+async fn get_subs() -> Result<SubList, Box<dyn std::error::Error>> {
 
     let client = reqwest::Client::new();
     let body = client.get("https://oauth.reddit.com/subreddits/mine/subscriber")
@@ -20,7 +37,7 @@ async fn get_subs() -> Result<String, Box<dyn std::error::Error>> {
         .header(AUTHORIZATION, format!("bearer {}", env!("REDDIT")))
         .send()
         .await?
-        .text()
+        .json::<SubList>()
         .await?;
 
     Ok(body)
