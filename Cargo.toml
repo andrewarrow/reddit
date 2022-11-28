@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 reqwest = { features = ["json"] }
 tokio = { features = ["full"] }
+serde = { features = ["derive"] }

@@ -1,4 +1,9 @@
-use std::env;
+use reqwest::header::{AUTHORIZATION, USER_AGENT};
+
+struct CatFact {
+    fact: String,
+    length: i32,
+}
 
 #[tokio::main]
 async fn main() {
@@ -9,14 +14,10 @@ async fn main() {
 
 async fn get_subs() -> Result<String, Box<dyn std::error::Error>> {
 
-    use reqwest::header::{AUTHORIZATION, CONTENT_TYPE, USER_AGENT};
-
-    let _token = env::var("REDDIT");
     let client = reqwest::Client::new();
     let body = client.get("https://oauth.reddit.com/subreddits/mine/subscriber")
-        .header(CONTENT_TYPE, "application/json")
         .header(USER_AGENT, "foo")
-        .header(AUTHORIZATION, "bearer {_token}")
+        .header(AUTHORIZATION, format!("bearer {}", env!("REDDIT")))
         .send()
         .await?
         .text()
