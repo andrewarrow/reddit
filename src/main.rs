@@ -13,7 +13,7 @@ struct SubData {
 
 #[derive(Deserialize, Debug)]
 struct Sub {
-    kind: String,
+    //kind: String,
     data: SubDetail
 }
 
@@ -24,9 +24,15 @@ struct SubDetail {
 
 #[tokio::main]
 async fn main() {
-    let subs = get_subs().await;
+    let subs = match get_subs().await {
+        Ok(v) => v,
+        Err(_e) => SubList{data: SubData{children: Vec::new()}}
+    };
 
-    println!("subs = {:#?}", subs);
+    for sub in subs.data.children.iter() {
+      println!("subs = {:#?}", sub.data.display_name);
+    }
+
 }
 
 async fn get_subs() -> Result<SubList, Box<dyn std::error::Error>> {
