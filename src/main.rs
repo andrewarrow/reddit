@@ -26,7 +26,10 @@ struct SubDetail {
 async fn main() {
     let subs = match get_subs().await {
         Ok(v) => v,
-        Err(_e) => SubList{data: SubData{children: Vec::new()}}
+        Err(e) => { 
+            println!("e {}", e); 
+            SubList{data: SubData{children: Vec::new()}}
+        }
     };
 
     for sub in subs.data.children.iter() {
